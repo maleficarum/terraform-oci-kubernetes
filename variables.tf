@@ -1,0 +1,36 @@
+variable "compartment_id" {
+  type        = string
+  description = "Compartment ID to deployt the resources"
+}
+
+variable "cluster_definition" {
+  type = object({
+    name               = string,
+    kubernetes_version = string,
+    public_endpoint    = bool,
+    cluster_type       = string, #[BASIC_CLUSTER, ENHANCED_CLUSTER]
+    node_pool_size     = number,
+    node_pool_name     = string,
+    node_pool_shape    = string,
+    cni_type           = string,
+    shape_mem          = number,
+    shape_ocpu         = number,
+    image              = string
+  })
+  description = "The cluster definition"
+}
+
+variable "vcn_id" {
+  type        = string
+  description = "The OCID of the VCN"
+}
+
+variable "public_subnet_id" {
+  type        = string
+  description = "The OCID of the public subnet"
+}
+
+variable "private_subnet_id" {
+  type        = string
+  description = "The OCID of the private subnet"
+}
