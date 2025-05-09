@@ -15,7 +15,11 @@ variable "cluster_definition" {
     cni_type           = string,
     shape_mem          = number,
     shape_ocpu         = number,
-    image              = string
+    image              = string,
+    options = object({
+      dashboard_enabled = bool,
+      tiller_enabled    = bool
+    })
   })
   description = "The cluster definition"
 }
