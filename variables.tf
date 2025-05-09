@@ -38,3 +38,8 @@ variable "private_subnet_id" {
   type        = string
   description = "The OCID of the private subnet"
 }
+
+variable "environment" {
+  type        = string
+  description = "The deployed environment"
+}
