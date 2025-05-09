@@ -5,7 +5,9 @@ resource "oci_containerengine_cluster" "oke_cluster" {
   name               = var.cluster_definition.name
   vcn_id             = var.vcn_id
 
-  defined_tags = {}
+  defined_tags = {
+    "Oracle-Tags.CreatedBy" = "default/terraform"
+  }
 
   endpoint_config {
     is_public_ip_enabled = var.cluster_definition.public_endpoint
@@ -15,16 +17,30 @@ resource "oci_containerengine_cluster" "oke_cluster" {
   freeform_tags = {}
 
   type = var.cluster_definition.cluster_type
+
+  options {
+    add_ons {
+
+      is_kubernetes_dashboard_enabled = var.cluster_definition.options.dashboard_enabled
+      is_tiller_enabled               = var.cluster_definition.options.tiller_enabled
+    }
+    persistent_volume_config {
+      defined_tags = {
+        "Oracle-Tags.CreatedBy" = "default/terraform"
+      }
+    }
+    service_lb_config {
+      defined_tags = {
+        "Oracle-Tags.CreatedBy" = "default/terraform"
+      }
+    }
+    service_lb_subnet_ids = [var.public_subnet_id]
+  }
   /*
     options {
 
         #Optional
-        add_ons {
-
-            #Optional
-            is_kubernetes_dashboard_enabled = var.cluster_options_add_ons_is_kubernetes_dashboard_enabled
-            is_tiller_enabled = var.cluster_options_add_ons_is_tiller_enabled
-        }
+        
         admission_controller_options {
 
             #Optional
@@ -63,19 +79,7 @@ resource "oci_containerengine_cluster" "oke_cluster" {
             #Optional
             is_open_id_connect_discovery_enabled = var.cluster_options_open_id_connect_discovery_is_open_id_connect_discovery_enabled
         }
-        persistent_volume_config {
 
-            #Optional
-            defined_tags = {"Operations.CostCenter"= "42"}
-            freeform_tags = {"Department"= "Finance"}
-        }
-        service_lb_config {
-
-            #Optional
-            defined_tags = {"Operations.CostCenter"= "42"}
-            freeform_tags = {"Department"= "Finance"}
-        }
-        service_lb_subnet_ids = var.cluster_options_service_lb_subnet_ids
     }*/
 }
 
@@ -84,6 +88,7 @@ resource "oci_containerengine_node_pool" "node_pool" {
   compartment_id = var.compartment_id
   name           = var.cluster_definition.node_pool_name
   node_shape     = var.cluster_definition.node_pool_shape
+  ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDDKf8XQ6Om71FsXzR+r61/8MfAkZW6s9BfHN49O67DyzRT6kdRxdylAamRJkD1sbQQmUeJPHnrlPP1VsFNuHe2f52fuJeCpVDHjr1hEFnLwyYRUCTnYSxdbAQlt93GyjDrh+vZ1/w9cCDf9SsBbtQejCotdya4wKwSxUOPOrnAQcXkp2n0siOnTyzqpR2pdkIZqUaHRdf02C61J3qWIfoktC7D57mhEzIABJCLghKBg/T+XdqOZOWWaDx/WDeNME1RCRguznHag2TxOm2VUJPJECw8SwGh90ZMpwsVoU9Kobj3sDGeQ0XYFEibV0WUWV7b6D6chy/H4TOQmYihTEMqI0LdZoH0eQBNiZ68ADr+dyHkQEjwIkmGDVzyGNxRNnQHYUrLwvSTp5wVL+u8vAGoWEUm5BqXyUHBwuyzdpRp8zF7zpiFyz0K25wfZfDkW3W8dNBEyItPqllLl0ut83woGIV5H1IONYyeyDc2mAo3hndAvPAqzoPZvVDubsUuNB3NZ/+jRZsxOlVxNywc71Vf3Vdx055HaXBIKnmbbxOdxUh/JUS2e+pdtuF7znMOKCo7dVFjR1gD5nHb/cmWrpT3EDyNinp3Gy4cS3Un3nT39lVw7USVKGKUuOVRcf1uujggQ2m3Ug+XxlpchVHzXbLxWxO74SQTxFb4iJ5YaiMpFw== maleficarum@misanthropia"
 
   node_config_details {
     placement_configs {
@@ -97,6 +102,7 @@ resource "oci_containerengine_node_pool" "node_pool" {
   node_shape_config {
     memory_in_gbs = var.cluster_definition.shape_mem
     ocpus         = var.cluster_definition.shape_ocpu
+
   }
 
   node_source_details {
@@ -108,4 +114,10 @@ resource "oci_containerengine_node_pool" "node_pool" {
     create = "20m"
     delete = "20m"
   }
+}
+
+resource "local_file" "kubeconfig" {
+  content         = data.oci_containerengine_cluster_kube_config.cluster_kube_config.content
+  filename        = pathexpand("~/.kube/config.${oci_containerengine_cluster.oke_cluster.name}")
+  file_permission = "0700"
 }
