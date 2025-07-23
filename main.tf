@@ -6,7 +6,7 @@ resource "oci_containerengine_cluster" "oke_cluster" {
   vcn_id             = var.vcn_id
 
   defined_tags = {
-    "Oracle-Tags.CreatedBy"   = "default/terraform",
+    "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
   }
 
@@ -27,63 +27,18 @@ resource "oci_containerengine_cluster" "oke_cluster" {
     }
     persistent_volume_config {
       defined_tags = {
-        "Oracle-Tags.CreatedBy"   = "default/terraform",
+        "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
         "Oracle-Tags.Environment" = var.environment
       }
     }
     service_lb_config {
       defined_tags = {
-        "Oracle-Tags.CreatedBy"   = "default/terraform",
+        "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
         "Oracle-Tags.Environment" = var.environment
       }
     }
     service_lb_subnet_ids = [var.public_subnet_id]
   }
-  /*
-    options {
-
-        #Optional
-        
-        admission_controller_options {
-
-            #Optional
-            is_pod_security_policy_enabled = var.cluster_options_admission_controller_options_is_pod_security_policy_enabled
-        }
-        ip_families = var.cluster_options_ip_families
-        kubernetes_network_config {
-
-            #Optional
-            pods_cidr = var.cluster_options_kubernetes_network_config_pods_cidr
-            services_cidr = var.cluster_options_kubernetes_network_config_services_cidr
-        }
-        open_id_connect_token_authentication_config {
-            #Required
-            is_open_id_connect_auth_enabled = var.cluster_options_open_id_connect_token_authentication_config_is_open_id_connect_auth_enabled
-
-            #Optional
-            ca_certificate = var.cluster_options_open_id_connect_token_authentication_config_ca_certificate
-            client_id = oci_containerengine_client.test_client.id
-            configuration_file = var.cluster_options_open_id_connect_token_authentication_config_configuration_file
-            groups_claim = var.cluster_options_open_id_connect_token_authentication_config_groups_claim
-            groups_prefix = var.cluster_options_open_id_connect_token_authentication_config_groups_prefix
-            issuer_url = var.cluster_options_open_id_connect_token_authentication_config_issuer_url
-            required_claims {
-
-                #Optional
-                key = var.cluster_options_open_id_connect_token_authentication_config_required_claims_key
-                value = var.cluster_options_open_id_connect_token_authentication_config_required_claims_value
-            }
-            signing_algorithms = var.cluster_options_open_id_connect_token_authentication_config_signing_algorithms
-            username_claim = var.cluster_options_open_id_connect_token_authentication_config_username_claim
-            username_prefix = var.cluster_options_open_id_connect_token_authentication_config_username_prefix
-        }                   
-        open_id_connect_discovery {
-
-            #Optional
-            is_open_id_connect_discovery_enabled = var.cluster_options_open_id_connect_discovery_is_open_id_connect_discovery_enabled
-        }
-
-    }*/
 }
 
 resource "oci_containerengine_node_pool" "node_pool" {
@@ -94,13 +49,13 @@ resource "oci_containerengine_node_pool" "node_pool" {
   ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDDKf8XQ6Om71FsXzR+r61/8MfAkZW6s9BfHN49O67DyzRT6kdRxdylAamRJkD1sbQQmUeJPHnrlPP1VsFNuHe2f52fuJeCpVDHjr1hEFnLwyYRUCTnYSxdbAQlt93GyjDrh+vZ1/w9cCDf9SsBbtQejCotdya4wKwSxUOPOrnAQcXkp2n0siOnTyzqpR2pdkIZqUaHRdf02C61J3qWIfoktC7D57mhEzIABJCLghKBg/T+XdqOZOWWaDx/WDeNME1RCRguznHag2TxOm2VUJPJECw8SwGh90ZMpwsVoU9Kobj3sDGeQ0XYFEibV0WUWV7b6D6chy/H4TOQmYihTEMqI0LdZoH0eQBNiZ68ADr+dyHkQEjwIkmGDVzyGNxRNnQHYUrLwvSTp5wVL+u8vAGoWEUm5BqXyUHBwuyzdpRp8zF7zpiFyz0K25wfZfDkW3W8dNBEyItPqllLl0ut83woGIV5H1IONYyeyDc2mAo3hndAvPAqzoPZvVDubsUuNB3NZ/+jRZsxOlVxNywc71Vf3Vdx055HaXBIKnmbbxOdxUh/JUS2e+pdtuF7znMOKCo7dVFjR1gD5nHb/cmWrpT3EDyNinp3Gy4cS3Un3nT39lVw7USVKGKUuOVRcf1uujggQ2m3Ug+XxlpchVHzXbLxWxO74SQTxFb4iJ5YaiMpFw== maleficarum@misanthropia"
 
   defined_tags = {
-    "Oracle-Tags.CreatedBy"   = "default/terraform",
+    "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
   }
 
   node_config_details {
     defined_tags = {
-      "Oracle-Tags.CreatedBy"   = "default/terraform",
+      "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
       "Oracle-Tags.Environment" = var.environment
     }
 
