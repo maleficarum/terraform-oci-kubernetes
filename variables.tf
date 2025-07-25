@@ -19,7 +19,8 @@ variable "cluster_definition" {
     options = object({
       dashboard_enabled = bool,
       tiller_enabled    = bool
-    })
+    }),
+    public_keys = list(string)
   })
   description = "The cluster definition"
 }
