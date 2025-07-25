@@ -1,6 +1,12 @@
+resource "oci_identity_compartment" "oke_compartment" {
+  compartment_id = var.compartment_id
+  description    = "Compartment for OKE resources"
+  name           = "oke"
+}
+
 resource "oci_containerengine_cluster" "oke_cluster" {
   #Required
-  compartment_id     = var.compartment_id
+  compartment_id     = oci_identity_compartment.oke_compartment.id
   kubernetes_version = var.cluster_definition.kubernetes_version
   name               = var.cluster_definition.name
   vcn_id             = var.vcn_id
@@ -8,6 +14,7 @@ resource "oci_containerengine_cluster" "oke_cluster" {
   defined_tags = {
     "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
+    "Oracle-Tags.Application" = var.application_name
   }
 
   endpoint_config {
@@ -29,12 +36,14 @@ resource "oci_containerengine_cluster" "oke_cluster" {
       defined_tags = {
         "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
         "Oracle-Tags.Environment" = var.environment
+        "Oracle-Tags.Application" = var.application_name
       }
     }
     service_lb_config {
       defined_tags = {
         "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
         "Oracle-Tags.Environment" = var.environment
+        "Oracle-Tags.Application" = var.application_name
       }
     }
     service_lb_subnet_ids = [var.public_subnet_id]
@@ -43,7 +52,7 @@ resource "oci_containerengine_cluster" "oke_cluster" {
 
 resource "oci_containerengine_node_pool" "node_pool" {
   cluster_id     = oci_containerengine_cluster.oke_cluster.id
-  compartment_id = var.compartment_id
+  compartment_id     = oci_identity_compartment.oke_compartment.id
   name           = var.cluster_definition.node_pool_name
   node_shape     = var.cluster_definition.node_pool_shape
   ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDDKf8XQ6Om71FsXzR+r61/8MfAkZW6s9BfHN49O67DyzRT6kdRxdylAamRJkD1sbQQmUeJPHnrlPP1VsFNuHe2f52fuJeCpVDHjr1hEFnLwyYRUCTnYSxdbAQlt93GyjDrh+vZ1/w9cCDf9SsBbtQejCotdya4wKwSxUOPOrnAQcXkp2n0siOnTyzqpR2pdkIZqUaHRdf02C61J3qWIfoktC7D57mhEzIABJCLghKBg/T+XdqOZOWWaDx/WDeNME1RCRguznHag2TxOm2VUJPJECw8SwGh90ZMpwsVoU9Kobj3sDGeQ0XYFEibV0WUWV7b6D6chy/H4TOQmYihTEMqI0LdZoH0eQBNiZ68ADr+dyHkQEjwIkmGDVzyGNxRNnQHYUrLwvSTp5wVL+u8vAGoWEUm5BqXyUHBwuyzdpRp8zF7zpiFyz0K25wfZfDkW3W8dNBEyItPqllLl0ut83woGIV5H1IONYyeyDc2mAo3hndAvPAqzoPZvVDubsUuNB3NZ/+jRZsxOlVxNywc71Vf3Vdx055HaXBIKnmbbxOdxUh/JUS2e+pdtuF7znMOKCo7dVFjR1gD5nHb/cmWrpT3EDyNinp3Gy4cS3Un3nT39lVw7USVKGKUuOVRcf1uujggQ2m3Ug+XxlpchVHzXbLxWxO74SQTxFb4iJ5YaiMpFw== maleficarum@misanthropia"
@@ -51,12 +60,14 @@ resource "oci_containerengine_node_pool" "node_pool" {
   defined_tags = {
     "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
+    "Oracle-Tags.Application" = var.application_name
   }
 
   node_config_details {
     defined_tags = {
       "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
       "Oracle-Tags.Environment" = var.environment
+      "Oracle-Tags.Application" = var.application_name
     }
 
     placement_configs {
