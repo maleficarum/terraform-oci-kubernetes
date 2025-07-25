@@ -43,3 +43,9 @@ variable "environment" {
   type        = string
   description = "The deployed environment"
 }
+
+variable "application_name" {
+  type = string
+  default = "General"
+  description = "The application name that will be deployed over this resource"
+}
