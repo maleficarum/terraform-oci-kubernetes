@@ -52,7 +52,7 @@ resource "oci_containerengine_cluster" "oke_cluster" {
 
 resource "oci_containerengine_node_pool" "node_pool" {
   cluster_id     = oci_containerengine_cluster.oke_cluster.id
-  compartment_id     = oci_identity_compartment.oke_compartment.id
+  compartment_id = oci_identity_compartment.oke_compartment.id
   name           = var.cluster_definition.node_pool_name
   node_shape     = var.cluster_definition.node_pool_shape
   ssh_public_key = join("\n", var.cluster_definition.public_keys)
@@ -64,6 +64,7 @@ resource "oci_containerengine_node_pool" "node_pool" {
   }
 
   node_config_details {
+
     defined_tags = {
       "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
       "Oracle-Tags.Environment" = var.environment
@@ -95,7 +96,7 @@ resource "oci_containerengine_node_pool" "node_pool" {
   }
 }
 
-resource "local_file" "kubeconfig" {
+resource "local_file" "local_file" {
   count           = fileexists("~/.kube/config.${oci_containerengine_cluster.oke_cluster.name}") ? 0 : 1
   content         = data.oci_containerengine_cluster_kube_config.cluster_kube_config.content
   filename        = pathexpand("~/.kube/config.${oci_containerengine_cluster.oke_cluster.name}")
