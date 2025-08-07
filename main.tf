@@ -14,12 +14,12 @@ resource "oci_containerengine_cluster" "oke_cluster" {
   defined_tags = {
     "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
-    "Oracle-Tags.Application" = var.application_name
+    "Oracle-Tags.Application" =  var.cluster_definition.application_name == "" ? var.application_name : var.cluster_definition.application_name
   }
 
   endpoint_config {
     is_public_ip_enabled = var.cluster_definition.public_endpoint
-    subnet_id            = var.public_subnet_id
+    subnet_id            = var.public_subnets[var.cluster_definition.services_subnet_index]
   }
 
   freeform_tags = {}
@@ -36,17 +36,17 @@ resource "oci_containerengine_cluster" "oke_cluster" {
       defined_tags = {
         "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
         "Oracle-Tags.Environment" = var.environment
-        "Oracle-Tags.Application" = var.application_name
+        "Oracle-Tags.Application" = var.cluster_definition.application_name == "" ? var.application_name : var.cluster_definition.application_name
       }
     }
     service_lb_config {
       defined_tags = {
         "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
         "Oracle-Tags.Environment" = var.environment
-        "Oracle-Tags.Application" = var.application_name
+        "Oracle-Tags.Application" = var.cluster_definition.application_name == "" ? var.application_name : var.cluster_definition.application_name
       }
     }
-    service_lb_subnet_ids = [var.public_subnet_id]
+    service_lb_subnet_ids = [var.public_subnets[var.cluster_definition.services_subnet_index]]
   }
 }
 
@@ -60,7 +60,7 @@ resource "oci_containerengine_node_pool" "node_pool" {
   defined_tags = {
     "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
-    "Oracle-Tags.Application" = var.application_name
+    "Oracle-Tags.Application" =  var.cluster_definition.application_name == "" ? var.application_name : var.cluster_definition.application_name
   }
 
   node_config_details {
@@ -68,12 +68,12 @@ resource "oci_containerengine_node_pool" "node_pool" {
     defined_tags = {
       "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
       "Oracle-Tags.Environment" = var.environment
-      "Oracle-Tags.Application" = var.application_name
+      "Oracle-Tags.Application" =  var.cluster_definition.application_name == "" ? var.application_name : var.cluster_definition.application_name
     }
 
     placement_configs {
       availability_domain = data.oci_identity_availability_domains.oci_identity_availability_domains.availability_domains[0].name
-      subnet_id           = var.private_subnet_id # Worker node subnet
+      subnet_id           = var.private_subnets[var.cluster_definition.nodepool_subnet_index]
     }
     size    = var.cluster_definition.node_pool_size
     nsg_ids = []
