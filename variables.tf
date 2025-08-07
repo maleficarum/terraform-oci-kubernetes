@@ -20,7 +20,10 @@ variable "cluster_definition" {
       dashboard_enabled = bool,
       tiller_enabled    = bool
     }),
-    public_keys = list(string)
+    public_keys = list(string),
+    nodepool_subnet_index = number,
+    services_subnet_index = number,
+    application_name = string
   })
   description = "The cluster definition"
 }
@@ -30,13 +33,13 @@ variable "vcn_id" {
   description = "The OCID of the VCN"
 }
 
-variable "public_subnet_id" {
-  type        = string
+variable "public_subnets" {
+  type        = list(string)
   description = "The OCID of the public subnet"
 }
 
-variable "private_subnet_id" {
-  type        = string
+variable "private_subnets" {
+  type        = list(string)
   description = "The OCID of the private subnet"
 }
 
