@@ -1,4 +1,6 @@
 resource "oci_identity_compartment" "oke_compartment" {
+  count = var.compartment_id != "" ? 1 : 0
+
   compartment_id = var.compartment_id
   description    = "Compartment for OKE resources"
   name           = "oke"
@@ -6,7 +8,7 @@ resource "oci_identity_compartment" "oke_compartment" {
 
 resource "oci_containerengine_cluster" "oke_cluster" {
   #Required
-  compartment_id     = oci_identity_compartment.oke_compartment.id
+  compartment_id     = local.compartment_id
   kubernetes_version = var.cluster_definition.kubernetes_version
   name               = var.cluster_definition.name
   vcn_id             = var.vcn_id
@@ -52,7 +54,7 @@ resource "oci_containerengine_cluster" "oke_cluster" {
 
 resource "oci_containerengine_node_pool" "node_pool" {
   cluster_id     = oci_containerengine_cluster.oke_cluster.id
-  compartment_id = oci_identity_compartment.oke_compartment.id
+  compartment_id = local.compartment_id
   name           = var.cluster_definition.node_pool_name
   node_shape     = var.cluster_definition.node_pool_shape
   ssh_public_key = join("\n", var.cluster_definition.public_keys)
