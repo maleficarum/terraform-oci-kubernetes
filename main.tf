@@ -16,7 +16,7 @@ resource "oci_containerengine_cluster" "oke_cluster" {
   defined_tags = {
     "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
-    "Oracle-Tags.Application" =  var.cluster_definition.application_name == "" ? var.application_name : var.cluster_definition.application_name
+    "Oracle-Tags.Application" = var.cluster_definition.application_name == "" ? var.application_name : var.cluster_definition.application_name
   }
 
   endpoint_config {
@@ -59,10 +59,16 @@ resource "oci_containerengine_node_pool" "node_pool" {
   node_shape     = var.cluster_definition.node_pool_shape
   ssh_public_key = join("\n", var.cluster_definition.public_keys)
 
+  node_pool_cycling_details {
+    is_node_cycling_enabled = true # Enable the cycling feature for this pool
+    maximum_unavailable     = "1"  # Optional: Define how many nodes can be cycled at once
+    maximum_surge           = "1"  # Optional: Define how many extra nodes can be created during cycling
+  }
+
   defined_tags = {
     "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
-    "Oracle-Tags.Application" =  var.cluster_definition.application_name == "" ? var.application_name : var.cluster_definition.application_name
+    "Oracle-Tags.Application" = var.cluster_definition.application_name == "" ? var.application_name : var.cluster_definition.application_name
   }
 
   node_config_details {
@@ -70,7 +76,7 @@ resource "oci_containerengine_node_pool" "node_pool" {
     defined_tags = {
       "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
       "Oracle-Tags.Environment" = var.environment
-      "Oracle-Tags.Application" =  var.cluster_definition.application_name == "" ? var.application_name : var.cluster_definition.application_name
+      "Oracle-Tags.Application" = var.cluster_definition.application_name == "" ? var.application_name : var.cluster_definition.application_name
     }
 
     placement_configs {
@@ -84,7 +90,9 @@ resource "oci_containerengine_node_pool" "node_pool" {
   node_shape_config {
     memory_in_gbs = var.cluster_definition.shape_mem
     ocpus         = var.cluster_definition.shape_ocpu
-
+  }
+  node_metadata = {
+    shape_version = "v2-4ocpu" # <-- Change this value when you change the shape
   }
 
   node_source_details {
