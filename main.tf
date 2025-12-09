@@ -13,18 +13,13 @@ resource "oci_containerengine_cluster" "oke_cluster" {
   name               = var.cluster_definition.name
   vcn_id             = var.vcn_id
 
-  defined_tags = {
-    "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
-    "Oracle-Tags.Environment" = var.environment
-    "Oracle-Tags.Application" = var.cluster_definition.application_name == "" ? var.application_name : var.cluster_definition.application_name
-  }
+  defined_tags  = var.cluster_definition.defined_tags
+  freeform_tags = var.cluster_definition.freeform_tags
 
   endpoint_config {
     is_public_ip_enabled = var.cluster_definition.public_endpoint
-    subnet_id            = var.public_subnets[var.cluster_definition.services_subnet_index]
+    subnet_id            = var.public_subnets[var.cluster_definition.api_server_subnet_index]
   }
-
-  freeform_tags = {}
 
   type = var.cluster_definition.cluster_type
 
@@ -35,29 +30,26 @@ resource "oci_containerengine_cluster" "oke_cluster" {
       is_tiller_enabled               = var.cluster_definition.options.tiller_enabled
     }
     persistent_volume_config {
-      defined_tags = {
-        "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
-        "Oracle-Tags.Environment" = var.environment
-        "Oracle-Tags.Application" = var.cluster_definition.application_name == "" ? var.application_name : var.cluster_definition.application_name
-      }
+      defined_tags  = var.cluster_definition.defined_tags
+      freeform_tags = var.cluster_definition.freeform_tags
     }
     service_lb_config {
-      defined_tags = {
-        "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
-        "Oracle-Tags.Environment" = var.environment
-        "Oracle-Tags.Application" = var.cluster_definition.application_name == "" ? var.application_name : var.cluster_definition.application_name
-      }
+      defined_tags  = var.cluster_definition.defined_tags
+      freeform_tags = var.cluster_definition.freeform_tags
     }
     service_lb_subnet_ids = [var.public_subnets[var.cluster_definition.services_subnet_index]]
   }
 }
 
 resource "oci_containerengine_node_pool" "node_pool" {
+  count = length(var.cluster_definition.node_pools)
+
   cluster_id     = oci_containerengine_cluster.oke_cluster.id
   compartment_id = local.compartment_id
-  name           = var.cluster_definition.node_pool_name
-  node_shape     = var.cluster_definition.node_pool_shape
-  ssh_public_key = join("\n", var.cluster_definition.public_keys)
+
+  name           = var.cluster_definition.node_pools[count.index].node_pool_name
+  node_shape     = var.cluster_definition.node_pools[count.index].node_pool_shape
+  ssh_public_key = join("\n", var.cluster_definition.node_pools[count.index].public_keys)
 
   node_pool_cycling_details {
     is_node_cycling_enabled = true # Enable the cycling feature for this pool
@@ -65,34 +57,27 @@ resource "oci_containerengine_node_pool" "node_pool" {
     maximum_surge           = "1"  # Optional: Define how many extra nodes can be created during cycling
   }
 
-  defined_tags = {
-    "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
-    "Oracle-Tags.Environment" = var.environment
-    "Oracle-Tags.Application" = var.cluster_definition.application_name == "" ? var.application_name : var.cluster_definition.application_name
-  }
+  defined_tags  = var.cluster_definition.defined_tags
+  freeform_tags = var.cluster_definition.freeform_tags
 
   node_config_details {
 
-    defined_tags = {
-      "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
-      "Oracle-Tags.Environment" = var.environment
-      "Oracle-Tags.Application" = var.cluster_definition.application_name == "" ? var.application_name : var.cluster_definition.application_name
-    }
-
+    defined_tags  = var.cluster_definition.defined_tags
+    freeform_tags = var.cluster_definition.freeform_tags
     placement_configs {
       availability_domain = data.oci_identity_availability_domains.oci_identity_availability_domains.availability_domains[0].name
-      subnet_id           = var.private_subnets[var.cluster_definition.nodepool_subnet_index]
+      subnet_id           = var.private_subnets[var.cluster_definition.node_pools[count.index].nodepool_subnet_index]
     }
-    size    = var.cluster_definition.node_pool_size
-    nsg_ids = []
+    size = var.cluster_definition.node_pools[count.index].node_pool_size
+    #nsg_ids = var.oke_workers_nsg
   }
 
   node_shape_config {
-    memory_in_gbs = var.cluster_definition.shape_mem
-    ocpus         = var.cluster_definition.shape_ocpu
+    memory_in_gbs = var.cluster_definition.node_pools[count.index].shape_mem
+    ocpus         = var.cluster_definition.node_pools[count.index].shape_ocpu
   }
   node_metadata = {
-    shape_version = "v2-4ocpu" # <-- Change this value when you change the shape
+    shape_version = var.cluster_definition.node_pools[count.index].shape_version_tag
   }
 
   node_source_details {
