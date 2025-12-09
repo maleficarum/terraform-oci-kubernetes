@@ -27,6 +27,7 @@ Dynamic group
 All {instance.compartment.id = 'ocid1.compartment.oc1..aaaaaaaap2og6mlovycnaqjoqardqfkhnvg4mxcvs4t6r2z5fcswkwyywdiq'} # OKE Cluster compartment id ASH
 All {instance.compartment.id = 'ocid1.compartment.oc1..aaaaaaaajrkqwshxcevho5nu3nqrummxe5yehyirf4klkyl76vep5qdrivgq'} # OKE Clsuter compartment id PHX
 All {resource.type='computecontainerinstance'}
+ANY {instance.compartment.id = 'ocid1.compartment.oc1..aaaaaaaajrkqwshxcevho5nu3nqrummxe5yehyirf4klkyl76vep5qdrivgq'} # To allow standby region to create attachments
 ```
 
 
@@ -38,3 +39,13 @@ Allow dynamic-group id ocid1.dynamicgroup.oc1..aaaaaaaaixhdaa4fc4ooqwnpn2vsfizd7
 Allow dynamic-group id ocid1.dynamicgroup.oc1..aaaaaaaaixhdaa4fc4ooqwnpn2vsfizd7oxxwge6physwnew4qdvazwukubq to manage cluster-family in compartment id ocid1.compartment.oc1..aaaaaaaabg35uqekdyl2br5zebsryhrcmngcmifbqgx2trn5ibzz5kcbvu7a # OKE CLUSTER COMPARTMENT OCID IN MTY
 Allow dynamic-group id ocid1.dynamicgroup.oc1..aaaaaaaaixhdaa4fc4ooqwnpn2vsfizd7oxxwge6physwnew4qdvazwukubq to manage object-family in compartment id ocid1.compartment.oc1..aaaaaaaaf7gtlnakoxfb6fh6czj2hzf5a3wuda5absxkltomaognbwnqg3ea 
 # PRODUCTION MTY COMPARTMENT OCID (WHERE BUCKET IS)
+
+#All of the next policies are required to create attachments to the block volumes in the target region. The target compartment is OKE in standby region
+Allow dynamic-group id ocid1.dynamicgroup.oc1..aaaaaaaa4gdfjghoopjmdhvovba6lkqeysowuc22cnbydrxsqb5a7vsdfm7q to manage volume-attachments in compartment id ocid1.compartment.oc1..aaaaaaaap2og6mlovycnaqjoqardqfkhnvg4mxcvs4t6r2z5fcswkwyywdiq
+Allow dynamic-group id ocid1.dynamicgroup.oc1..aaaaaaaa4gdfjghoopjmdhvovba6lkqeysowuc22cnbydrxsqb5a7vsdfm7q to manage volumes in compartment id ocid1.compartment.oc1..aaaaaaaap2og6mlovycnaqjoqardqfkhnvg4mxcvs4t6r2z5fcswkwyywdiq
+Allow dynamic-group id ocid1.dynamicgroup.oc1..aaaaaaaa4gdfjghoopjmdhvovba6lkqeysowuc22cnbydrxsqb5a7vsdfm7q to read instances in compartment id ocid1.compartment.oc1..aaaaaaaap2og6mlovycnaqjoqardqfkhnvg4mxcvs4t6r2z5fcswkwyywdiq
+Allow dynamic-group id ocid1.dynamicgroup.oc1..aaaaaaaa4gdfjghoopjmdhvovba6lkqeysowuc22cnbydrxsqb5a7vsdfm7q to use subnets in compartment id ocid1.compartment.oc1..aaaaaaaap2og6mlovycnaqjoqardqfkhnvg4mxcvs4t6r2z5fcswkwyywdiq
+Allow dynamic-group id ocid1.dynamicgroup.oc1..aaaaaaaa4gdfjghoopjmdhvovba6lkqeysowuc22cnbydrxsqb5a7vsdfm7q to use vnics in compartment id ocid1.compartment.oc1..aaaaaaaap2og6mlovycnaqjoqardqfkhnvg4mxcvs4t6r2z5fcswkwyywdiq
+Allow dynamic-group id ocid1.dynamicgroup.oc1..aaaaaaaa4gdfjghoopjmdhvovba6lkqeysowuc22cnbydrxsqb5a7vsdfm7q to inspect compartments in compartment id ocid1.compartment.oc1..aaaaaaaap2og6mlovycnaqjoqardqfkhnvg4mxcvs4t6r2z5fcswkwyywdiq
+```
+

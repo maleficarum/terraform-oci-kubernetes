@@ -4,6 +4,6 @@ output "oci_containerengine_cluster" {
 }
 
 output "compartment_id" {
-  value = local.compartment_id
+  value       = local.compartment_id
   description = "The OKE compartment"
 }
